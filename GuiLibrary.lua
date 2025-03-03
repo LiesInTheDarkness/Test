@@ -1794,6 +1794,77 @@ function RiseLib:CreateWindow(title, defaultTheme)
     return window
 end
 
+-- Add this function inside your RiseLib table (e.g., after initializing Themes and RiseLib.CurrentTheme)
+function RiseLib:Notify(title, message, duration)
+    duration = duration or 3 -- seconds; default if not provided
+
+    -- Create the notification ScreenGui
+    local notificationGui = Instance.new("ScreenGui")
+    notificationGui.Name = "RiseNotification"
+    notificationGui.ResetOnSpawn = false
+    notificationGui.Parent = game:GetService("CoreGui")
+    
+    -- Create the main frame for the notification
+    local frame = Instance.new("Frame")
+    frame.Name = "NotificationFrame"
+    frame.AnchorPoint = Vector2.new(0.5, 0)
+    frame.Position = UDim2.new(0.5, 0, -0.2, 0) -- start off-screen at top
+    frame.Size = UDim2.new(0, 300, 0, 80)
+    frame.BackgroundColor3 = Themes[RiseLib.CurrentTheme] and Themes[RiseLib.CurrentTheme].LightContrast or Color3.fromRGB(40, 40, 40)
+    frame.BorderSizePixel = 0
+    frame.Parent = notificationGui
+
+    -- Rounded corners for that extra drip
+    local uicorner = Instance.new("UICorner", frame)
+    uicorner.CornerRadius = UDim.new(0, 8)
+    
+    -- Title label
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Name = "TitleLabel"
+    titleLabel.Text = title or "Notification"
+    titleLabel.Size = UDim2.new(1, -20, 0, 30)
+    titleLabel.Position = UDim2.new(0, 10, 0, 10)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.TextColor3 = Themes[RiseLib.CurrentTheme] and Themes[RiseLib.CurrentTheme].TextColor or Color3.fromRGB(255, 255, 255)
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 18
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = frame
+
+    -- Message label
+    local messageLabel = Instance.new("TextLabel")
+    messageLabel.Name = "MessageLabel"
+    messageLabel.Text = message or ""
+    messageLabel.Size = UDim2.new(1, -20, 0, 30)
+    messageLabel.Position = UDim2.new(0, 10, 0, 40)
+    messageLabel.BackgroundTransparency = 1
+    messageLabel.TextColor3 = Themes[RiseLib.CurrentTheme] and Themes[RiseLib.CurrentTheme].TextColor or Color3.fromRGB(230, 230, 230)
+    messageLabel.Font = Enum.Font.Gotham
+    messageLabel.TextSize = 16
+    messageLabel.TextWrapped = true
+    messageLabel.TextXAlignment = Enum.TextXAlignment.Left
+    messageLabel.Parent = frame
+
+    -- Tween services for smooth slide in and out
+    local TweenService = game:GetService("TweenService")
+    local tweenInfoIn = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local tweenInfoOut = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+
+    -- Slide in from the top
+    local tweenIn = TweenService:Create(frame, tweenInfoIn, {Position = UDim2.new(0.5, 0, 0.1, 0)})
+    tweenIn:Play()
+
+    tweenIn.Completed:Connect(function()
+        task.wait(duration)
+        -- Fade out and slide up for the exit
+        local tweenOut = TweenService:Create(frame, tweenInfoOut, {Position = UDim2.new(0.5, 0, -0.2, 0), BackgroundTransparency = 1})
+        tweenOut:Play()
+        tweenOut.Completed:Connect(function()
+            notificationGui:Destroy()
+        end)
+    end)
+end
+
 -- Set current theme on initialization
 RiseLib.CurrentTheme = "Classic"
 
