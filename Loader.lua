@@ -1,7 +1,7 @@
-local RiseLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/LiesInTheDarkness/Test/refs/heads/main/GuiLibrary.lua"))()
+local Rise = loadstring(game:HttpGet("https://raw.githubusercontent.com/LiesInTheDarkness/Test/refs/heads/main/GuiLibrary.lua"))()
 
 -- Create the main window
-local window = RiseLib:CreateWindow("Example UI", "Classic")
+local window = Rise:CreateWindow("Example UI", "Classic")
 
 -- Add a tab to the window
 local tab = window:AddTab("Main Tab", "rbxassetid://7072706318")
