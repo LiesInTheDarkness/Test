@@ -1090,102 +1090,333 @@ function RiseLib:CreateWindow(title, defaultTheme)
             end
             
             function category:AddKeybind(name, defaultKey, callback)
-                defaultKey = defaultKey or "None"
-                callback = callback or function() end
-                
-                local keybindModule = Instance.new("Frame")
-                local keybindName = Instance.new("TextLabel")
-                local keybindButton = Instance.new("TextButton")
-                local UICorner_Keybind = Instance.new("UICorner")
-                
-                keybindModule.Name = name
-                keybindModule.Parent = self.ModuleContainer
-                keybindModule.BackgroundColor3 = Themes[RiseLib.CurrentTheme].LightContrast
-                keybindModule.Size = UDim2.new(1, 0, 0, 40)
-                
-                local UICorner_Module = Instance.new("UICorner")
-                UICorner_Module.CornerRadius = UDim.new(0, 4)
-                UICorner_Module.Parent = keybindModule
-                
-                keybindName.Name = "KeybindName"
-                keybindName.Parent = keybindModule
-                keybindName.BackgroundTransparency = 1.000
-                keybindName.Position = UDim2.new(0, 12, 0, 0)
-                keybindName.Size = UDim2.new(1, -80, 1, 0)
-                keybindName.Font = Enum.Font.Gotham
-                keybindName.Text = name
-                keybindName.TextColor3 = Themes[RiseLib.CurrentTheme].TextColor
-                keybindName.TextSize = 14.000
-                keybindName.TextXAlignment = Enum.TextXAlignment.Left
-                
-                keybindButton.Name = "KeybindButton"
-                keybindButton.Parent = keybindModule
-                keybindButton.BackgroundColor3 = Themes[RiseLib.CurrentTheme].DarkContrast
-                keybindButton.Position = UDim2.new(1, -70, 0.5, -15)
-                keybindButton.Size = UDim2.new(0, 60, 0, 30)
-                keybindButton.Font = Enum.Font.Gotham
-                keybindButton.Text = defaultKey
-                keybindButton.TextColor3 = Themes[RiseLib.CurrentTheme].TextColor
-                keybindButton.TextSize = 14.000
-                
-                UICorner_Keybind.CornerRadius = UDim.new(0, 4)
-                UICorner_Keybind.Parent = keybindButton
-                
-                local keybind = {
-                    Type = "Keybind",
-                    Name = name,
-                    Key = defaultKey,
-                    Value = defaultKey ~= "None",
-                    Listening = false,
-                    Callback = callback,
-                    Instance = keybindModule,
-                    Button = keybindButton
-                }
-                
-                -- Handle keybind listening and activation
-                keybindButton.MouseButton1Click:Connect(function()
-                    keybind.Listening = true
-                    keybindButton.Text = "..."
-                end)
-                
-                UserInputService.InputBegan:Connect(function(input, gameProcessed)
-                    if keybind.Listening then
-                        if input.UserInputType == Enum.UserInputType.Keyboard then
-                            keybind.Key = input.KeyCode.Name
-                            keybindButton.Text = input.KeyCode.Name
-                            keybind.Listening = false
-                        elseif isMobile and input.UserInputType == Enum.UserInputType.Touch then
-                            keybind.Key = "Touch"
-                            keybindButton.Text = "Touch"
-                            keybind.Listening = false
-                        end
-                    elseif not gameProcessed then
-                        if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode.Name == keybind.Key then
-                            keybind.Value = not keybind.Value
-                            callback(keybind.Value)
-                        elseif isMobile and input.UserInputType == Enum.UserInputType.Touch and keybind.Key == "Touch" then
-                            -- For mobile, we use a specific gesture or location for keybinds
-                            if input.Position.Y > workspace.CurrentCamera.ViewportSize.Y * 0.8 then
-                                keybind.Value = not keybind.Value
-                                callback(keybind.Value)
-                            end
-                        end
-                    end
-                end)
-                
-                -- Handle escape key to cancel listening
-                UserInputService.InputBegan:Connect(function(input)
-                    if keybind.Listening and input.KeyCode == Enum.KeyCode.Escape then
-                        keybind.Key = "None"
-                        keybindButton.Text = "None"
-                        keybind.Listening = false
-                    end
-                end)
-                
-                -- Add to category modules
-                table.insert(self.Modules, keybind)
-                return keybind
+    defaultKey = defaultKey or "None"
+    callback = callback or function() end
+    
+    local keybindModule = Instance.new("Frame")
+    local keybindName = Instance.new("TextLabel")
+    local keybindButton = Instance.new("TextButton")
+    local UICorner_Keybind = Instance.new("UICorner")
+    
+    keybindModule.Name = name
+    keybindModule.Parent = self.ModuleContainer
+    keybindModule.BackgroundColor3 = Themes[RiseLib.CurrentTheme].LightContrast
+    keybindModule.Size = UDim2.new(1, 0, 0, 40)
+    
+    local UICorner_Module = Instance.new("UICorner")
+    UICorner_Module.CornerRadius = UDim.new(0, 4)
+    UICorner_Module.Parent = keybindModule
+    
+    keybindName.Name = "KeybindName"
+    keybindName.Parent = keybindModule
+    keybindName.BackgroundTransparency = 1.000
+    keybindName.Position = UDim2.new(0, 12, 0, 0)
+    keybindName.Size = UDim2.new(1, -80, 1, 0)
+    keybindName.Font = Enum.Font.Gotham
+    keybindName.Text = name
+    keybindName.TextColor3 = Themes[RiseLib.CurrentTheme].TextColor
+    keybindName.TextSize = 14.000
+    keybindName.TextXAlignment = Enum.TextXAlignment.Left
+    
+    keybindButton.Name = "KeybindButton"
+    keybindButton.Parent = keybindModule
+    keybindButton.BackgroundColor3 = Themes[RiseLib.CurrentTheme].DarkContrast
+    keybindButton.Position = UDim2.new(1, -70, 0.5, -15)
+    keybindButton.Size = UDim2.new(0, 60, 0, 30)
+    keybindButton.Font = Enum.Font.Gotham
+    keybindButton.Text = defaultKey
+    keybindButton.TextColor3 = Themes[RiseLib.CurrentTheme].TextColor
+    keybindButton.TextSize = 14.000
+    
+    UICorner_Keybind.CornerRadius = UDim.new(0, 4)
+    UICorner_Keybind.Parent = keybindButton
+    
+    local keybind = {
+        Type = "Keybind",
+        Name = name,
+        Key = defaultKey,
+        Value = defaultKey ~= "None",
+        Listening = false,
+        Callback = callback,
+        Instance = keybindModule,
+        Button = keybindButton,
+        FloatingButton = nil,
+        ButtonPosition = nil  -- Store the position for saving/loading
+    }
+    
+    -- Mobile floating button functionality
+    local function createFloatingButton(position)
+        if keybind.FloatingButton then return end
+        
+        -- Create parent for the floating button that's outside the main UI
+        local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+        local floatingButtonsGui = playerGui:FindFirstChild("RiseLibFloatingButtons")
+        
+        if not floatingButtonsGui then
+            floatingButtonsGui = Instance.new("ScreenGui")
+            floatingButtonsGui.Name = "RiseLibFloatingButtons"
+            floatingButtonsGui.ResetOnSpawn = false
+            floatingButtonsGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+            floatingButtonsGui.Parent = playerGui
+        end
+        
+        -- Use provided position or default
+        local defaultPosition = UDim2.new(0.8, 0, 0.5, 0)
+        local buttonPosition = position or defaultPosition
+        
+        -- Create the floating button
+        local floatingButton = Instance.new("Frame")
+        floatingButton.Name = "FloatingButton_" .. name
+        floatingButton.Size = UDim2.new(0, 50, 0, 50)
+        floatingButton.Position = buttonPosition
+        floatingButton.BackgroundColor3 = Themes[RiseLib.CurrentTheme].Accent
+        floatingButton.BackgroundTransparency = 0.3
+        floatingButton.Parent = floatingButtonsGui
+        
+        local uiCorner = Instance.new("UICorner")
+        uiCorner.CornerRadius = UDim.new(1, 0) -- Makes it perfectly round
+        uiCorner.Parent = floatingButton
+        
+        local buttonLabel = Instance.new("TextLabel")
+        buttonLabel.Name = "Label"
+        buttonLabel.BackgroundTransparency = 1
+        buttonLabel.Size = UDim2.new(1, 0, 1, 0)
+        buttonLabel.Font = Enum.Font.GothamBold
+        buttonLabel.TextColor3 = Color3.new(1, 1, 1)
+        buttonLabel.TextSize = 16
+        buttonLabel.Text = string.sub(name, 1, 3) -- First 3 characters of name
+        buttonLabel.Parent = floatingButton
+        
+        local activeIndicator = Instance.new("Frame")
+        activeIndicator.Name = "ActiveIndicator"
+        activeIndicator.Size = UDim2.new(0.8, 0, 0.8, 0)
+        activeIndicator.Position = UDim2.new(0.1, 0, 0.1, 0)
+        activeIndicator.BackgroundColor3 = Color3.new(1, 1, 1)
+        activeIndicator.BackgroundTransparency = 1 -- Initially invisible
+        activeIndicator.Parent = floatingButton
+        
+        local uiCorner2 = Instance.new("UICorner")
+        uiCorner2.CornerRadius = UDim.new(1, 0)
+        uiCorner2.Parent = activeIndicator
+        
+        -- Setup tooltip that shows on touch
+        local tooltip = Instance.new("Frame")
+        tooltip.Name = "Tooltip"
+        tooltip.Size = UDim2.new(0, 150, 0, 40)
+        tooltip.Position = UDim2.new(0.5, 0, -0.8, 0)
+        tooltip.AnchorPoint = Vector2.new(0.5, 0)
+        tooltip.BackgroundColor3 = Themes[RiseLib.CurrentTheme].DarkContrast
+        tooltip.BackgroundTransparency = 0.2
+        tooltip.Visible = false
+        tooltip.Parent = floatingButton
+        
+        local tooltipCorner = Instance.new("UICorner")
+        tooltipCorner.CornerRadius = UDim.new(0, 6)
+        tooltipCorner.Parent = tooltip
+        
+        local tooltipText = Instance.new("TextLabel")
+        tooltipText.Name = "Text"
+        tooltipText.BackgroundTransparency = 1
+        tooltipText.Size = UDim2.new(1, 0, 1, 0)
+        tooltipText.Font = Enum.Font.Gotham
+        tooltipText.TextColor3 = Color3.new(1, 1, 1)
+        tooltipText.TextSize = 14
+        tooltipText.Text = name
+        tooltipText.Parent = tooltip
+        
+        -- Variables for touch control
+        local touchStartTime = 0
+        local isDragging = false
+        local startPos = nil
+        local touchConnectionBegan, touchConnectionMoved, touchConnectionEnded
+        
+        -- Update active indicator based on keybind state
+        local function updateActiveIndicator()
+            if keybind.Value then
+                activeIndicator.BackgroundTransparency = 0.5
+                floatingButton.BackgroundColor3 = Themes[RiseLib.CurrentTheme].Accent
+            else
+                activeIndicator.BackgroundTransparency = 1
+                floatingButton.BackgroundColor3 = Themes[RiseLib.CurrentTheme].DarkContrast
             end
+        end
+        
+        -- Save position to keybind object
+        local function saveButtonPosition()
+            keybind.ButtonPosition = floatingButton.Position
+        end
+        
+        touchConnectionBegan = floatingButton.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch then
+                touchStartTime = tick()
+                startPos = input.Position
+                
+                -- Show tooltip on touch
+                tooltip.Visible = true
+                
+                -- Schedule to hide tooltip
+                task.delay(2, function()
+                    tooltip.Visible = false
+                end)
+            end
+        end)
+        
+        touchConnectionMoved = floatingButton.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch then
+                if startPos and (startPos - input.Position).Magnitude > 10 then
+                    isDragging = true
+                    
+                    -- Calculate new position
+                    local delta = input.Position - startPos
+                    local newPosition = UDim2.new(
+                        floatingButton.Position.X.Scale, 
+                        floatingButton.Position.X.Offset + delta.X,
+                        floatingButton.Position.Y.Scale, 
+                        floatingButton.Position.Y.Offset + delta.Y
+                    )
+                    
+                    -- Clamp to screen bounds
+                    local viewportSize = workspace.CurrentCamera.ViewportSize
+                    local buttonSize = floatingButton.AbsoluteSize
+                    
+                    local xOffset = math.clamp(newPosition.X.Offset, 0, viewportSize.X - buttonSize.X)
+                    local yOffset = math.clamp(newPosition.Y.Offset, 0, viewportSize.Y - buttonSize.Y)
+                    
+                    -- Update position
+                    floatingButton.Position = UDim2.new(0, xOffset, 0, yOffset)
+                    startPos = input.Position
+                end
+            end
+        end)
+        
+        touchConnectionEnded = floatingButton.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch then
+                local touchDuration = tick() - touchStartTime
+                
+                if isDragging then
+                    -- Save position after dragging
+                    saveButtonPosition()
+                    isDragging = false
+                elseif touchDuration >= 1.5 then
+                    -- Long press - destroy the button
+                    keybind.FloatingButton = nil
+                    keybind.ButtonPosition = nil
+                    
+                    -- Fade out animation
+                    local tweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+                    local tween = TweenService:Create(floatingButton, tweenInfo, {BackgroundTransparency = 1, Size = UDim2.new(0, 0, 0, 0)})
+                    tween.Completed:Connect(function()
+                        -- Clean up
+                        touchConnectionBegan:Disconnect()
+                        touchConnectionMoved:Disconnect()
+                        touchConnectionEnded:Disconnect()
+                        floatingButton:Destroy()
+                    end)
+                    tween:Play()
+                    
+                    -- Change keybind back to None
+                    keybind.Key = "None"
+                    keybindButton.Text = "None"
+                elseif touchDuration < 0.5 and not isDragging then
+                    -- Short press - toggle the function
+                    keybind.Value = not keybind.Value
+                    updateActiveIndicator()
+                    callback(keybind.Value)
+                end
+            end
+        end)
+        
+        keybind.FloatingButton = floatingButton
+        keybind.ButtonPosition = buttonPosition
+        updateActiveIndicator()
+    end
+    
+    -- Handle keybind listening and activation
+    keybindButton.MouseButton1Click:Connect(function()
+        keybind.Listening = true
+        keybindButton.Text = "..."
+    end)
+    
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if keybind.Listening then
+            if input.UserInputType == Enum.UserInputType.Keyboard then
+                keybind.Key = input.KeyCode.Name
+                keybindButton.Text = input.KeyCode.Name
+                keybind.Listening = false
+            elseif input.UserInputType == Enum.UserInputType.Touch then
+                keybind.Key = "Mobile"
+                keybindButton.Text = "Mobile"
+                keybind.Listening = false
+                
+                -- Create floating button for mobile when keybind is set
+                if isMobile then
+                    createFloatingButton(keybind.ButtonPosition)
+                end
+            end
+        elseif not gameProcessed then
+            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode.Name == keybind.Key then
+                keybind.Value = not keybind.Value
+                
+                -- Update floating button indicator if it exists
+                if keybind.FloatingButton then
+                    local activeIndicator = keybind.FloatingButton:FindFirstChild("ActiveIndicator")
+                    if activeIndicator then
+                        activeIndicator.BackgroundTransparency = keybind.Value and 0.5 or 1
+                    end
+                    
+                    keybind.FloatingButton.BackgroundColor3 = keybind.Value 
+                        and Themes[RiseLib.CurrentTheme].Accent 
+                        or Themes[RiseLib.CurrentTheme].DarkContrast
+                end
+                
+                callback(keybind.Value)
+            end
+        end
+    end)
+    
+    -- Handle escape key to cancel listening
+    UserInputService.InputBegan:Connect(function(input)
+        if keybind.Listening and input.KeyCode == Enum.KeyCode.Escape then
+            keybind.Key = "None"
+            keybindButton.Text = "None"
+            keybind.Listening = false
+        end
+    end)
+    
+    -- Add special functions for saving/loading the keybind configuration
+    -- These will be called by the tab:SaveConfig and tab:LoadConfig methods
+    
+    -- Custom value serializer for saving
+    keybind.GetSaveData = function()
+        return {
+            Type = "Keybind",
+            Value = keybind.Value,
+            Key = keybind.Key,
+            ButtonPosition = keybind.ButtonPosition
+        }
+    end
+    
+    -- Custom loading function
+    keybind.LoadFromData = function(data)
+        keybind.Value = data.Value
+        keybind.Key = data.Key
+        keybindButton.Text = data.Key
+        
+        -- Recreate floating button if this is a mobile keybind and we have position data
+        if isMobile and data.Key == "Mobile" then
+            if keybind.FloatingButton then
+                keybind.FloatingButton:Destroy()
+                keybind.FloatingButton = nil
+            end
+            
+            createFloatingButton(data.ButtonPosition)
+        end
+    end
+    
+    -- Add to category modules
+    table.insert(self.Modules, keybind)
+    return keybind
+end
             
             function category:AddColorPicker(name, defaultColor, callback)
                 defaultColor = defaultColor or Color3.fromRGB(255, 255, 255)
@@ -1613,72 +1844,79 @@ function RiseLib:CreateWindow(title, defaultTheme)
         end
         
         -- Add config saving/loading functionality
-        function tab:SaveConfig(configName)
-            local configData = {}
-            
-            for _, category in pairs(self.Categories) do
-                configData[category.Name] = {}
-                
-                for _, module in ipairs(category.Modules) do
-                    if module.Type ~= "Button" and module.Type ~= "Label" then
-                        configData[category.Name][module.Name] = {
-                            Type = module.Type,
-                            Value = module.Value
-                        }
-                    end
+function tab:SaveConfig(configName)
+    local configData = {}
+    
+    for _, category in pairs(self.Categories) do
+        configData[category.Name] = {}
+        
+        for _, module in ipairs(category.Modules) do
+            if module.Type ~= "Button" and module.Type ~= "Label" then
+                -- Use custom GetSaveData function if available (for complex modules like Keybind)
+                if module.GetSaveData then
+                    configData[category.Name][module.Name] = module.GetSaveData()
+                else
+                    configData[category.Name][module.Name] = {
+                        Type = module.Type,
+                        Value = module.Value
+                    }
                 end
             end
-            
-            return saveConfig(configData, configName)
         end
-        
-        function tab:LoadConfig(configName)
-            local configData = loadConfig(configName)
-            if not configData then return false end
+    end
+    
+    return saveConfig(configData, configName)
+end
+
+function tab:LoadConfig(configName)
+    local configData = loadConfig(configName)
+    if not configData then return false end
+    
+    for categoryName, categoryData in pairs(configData) do
+        if self.Categories[categoryName] then
+            local category = self.Categories[categoryName]
             
-            for categoryName, categoryData in pairs(configData) do
-                if self.Categories[categoryName] then
-                    local category = self.Categories[categoryName]
-                    
-                    for moduleName, moduleData in pairs(categoryData) do
-                        for _, module in ipairs(category.Modules) do
-                            if module.Name == moduleName and module.Type == moduleData.Type then
-                                -- Update module based on type
-                                if module.Type == "Toggle" then
-                                    module.Value = moduleData.Value
-                                    module.Button.BackgroundColor3 = module.Value and Themes[RiseLib.CurrentTheme].Accent or Themes[RiseLib.CurrentTheme].DarkContrast
-                                    module.Circle.Position = module.Value and UDim2.new(1, -16, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)
-                                    module.Callback(module.Value)
-                                elseif module.Type == "Slider" then
-                                    module.Value = moduleData.Value
-                                    module.Display.Text = tostring(module.Value)
-                                    module.Fill.Size = UDim2.new((module.Value - module.Min) / (module.Max - module.Min), 0, 1, 0)
-                                    module.Callback(module.Value)
-                                elseif module.Type == "Dropdown" then
-                                    module.Value = moduleData.Value
-                                    module.Selection.Text = module.Value
-                                    module.Callback(module.Value)
-                                elseif module.Type == "ColorPicker" then
-                                    module.Value = moduleData.Value
-                                    module.Display.BackgroundColor3 = moduleData.Value
-                                    module.Preview.BackgroundColor3 = moduleData.Value
-                                    module.Callback(moduleData.Value)
-                                elseif module.Type == "TextBox" then
-                                    module.Value = moduleData.Value
-                                    module.Input.Text = moduleData.Value
-                                    module.Callback(moduleData.Value, false)
-                                end
+            for moduleName, moduleData in pairs(categoryData) do
+                for _, module in ipairs(category.Modules) do
+                    if module.Name == moduleName and module.Type == moduleData.Type then
+                        -- Use custom loader if available
+                        if module.LoadFromData then
+                            module.LoadFromData(moduleData)
+                        else
+                            -- Update module based on type
+                            if module.Type == "Toggle" then
+                                module.Value = moduleData.Value
+                                module.Button.BackgroundColor3 = module.Value and Themes[RiseLib.CurrentTheme].Accent or Themes[RiseLib.CurrentTheme].DarkContrast
+                                module.Circle.Position = module.Value and UDim2.new(1, -16, 0.5, -6) or UDim2.new(0, 2, 0.5, -6)
+                                module.Callback(module.Value)
+                            elseif module.Type == "Slider" then
+                                module.Value = moduleData.Value
+                                module.Display.Text = tostring(module.Value)
+                                module.Fill.Size = UDim2.new((module.Value - module.Min) / (module.Max - module.Min), 0, 1, 0)
+                                module.Callback(module.Value)
+                            elseif module.Type == "Dropdown" then
+                                module.Value = moduleData.Value
+                                module.Selection.Text = module.Value
+                                module.Callback(module.Value)
+                            elseif module.Type == "ColorPicker" then
+                                module.Value = moduleData.Value
+                                module.Display.BackgroundColor3 = moduleData.Value
+                                module.Preview.BackgroundColor3 = moduleData.Value
+                                module.Callback(moduleData.Value)
+                            elseif module.Type == "TextBox" then
+                                module.Value = moduleData.Value
+                                module.Input.Text = moduleData.Value
+                                module.Callback(moduleData.Value, false)
                             end
                         end
                     end
                 end
             end
-            
-            return true
         end
-        
-        return tab
     end
+    
+    return true
+end
     
     -- Theme changing functionality
     function window:ChangeTheme(newTheme)
@@ -1794,6 +2032,9 @@ function RiseLib:CreateWindow(title, defaultTheme)
     return window
 end
 
+-- Set current theme on initialization
+RiseLib.CurrentTheme = "Classic"
+
 -- Add this function inside your RiseLib table (e.g., after initializing Themes and RiseLib.CurrentTheme)
 function RiseLib:Notify(title, message, duration)
     duration = duration or 3 -- seconds; default if not provided
@@ -1864,8 +2105,5 @@ function RiseLib:Notify(title, message, duration)
         end)
     end)
 end
-
--- Set current theme on initialization
-RiseLib.CurrentTheme = "Classic"
 
 return RiseLib
