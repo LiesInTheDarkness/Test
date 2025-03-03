@@ -1,57 +1,25 @@
-local RiseLib = loadstring(game:HttpGet("URL_TO_YOUR_LIB"))() -- Load the UI library
+local RiseLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/LiesInTheDarkness/Test/main/Loader.lua"))()
 
-local Window = RiseLib:CreateWindow({
-    Name = "My Custom UI"
-    SaveConfig = true, -- Enables saving configurations
-    ConfigFolder = "Rise 6.0"
-})
+-- Create the main window
+local window = RiseLib:CreateWindow("Example UI", "Classic")
 
--- Create a Tab
-local MainTab = Window:CreateTab({
-    Name = "Main"
-})
+-- Add a tab to the window
+local tab = window:AddTab("Main Tab", "rbxassetid://7072706318")
 
--- Create a Section
-local MainSection = MainTab:CreateSection({
-    Name = "Main Features"
-})
+-- Add a category to the tab
+local category = tab:AddCategory("Main Category")
 
--- Add a Button
-MainSection:CreateButton({
-    Name = "Click Me",
-    Callback = function()
-        print("Button Clicked!")
-    end
-})
+-- Add a toggle to the category
+local toggle = category:AddToggle("Example Toggle", false, function(value)
+    print("Toggle value:", value)
+end)
 
--- Add a Keybind
-MainSection:CreateKeybind({
-    Name = "Toggle UI",
-    Default = Enum.KeyCode.RightShift,
-    Callback = function()
-        Window:Toggle()
-    end
-})
+-- Add a slider to the category
+local slider = category:AddSlider("Example Slider", {min = 0, max = 100, default = 50, increment = 1}, function(value)
+    print("Slider value:", value)
+end)
 
--- Add a Color Picker
-MainSection:CreateColorPicker({
-    Name = "Pick a Color",
-    Default = Color3.fromRGB(255, 0, 0), -- Red
-    Callback = function(color)
-        print("Selected Color: ", color)
-    end
-})
-
--- Add a Textbox
-MainSection:CreateTextbox({
-    Name = "Enter Text",
-    Placeholder = "Type here...",
-    Callback = function(text)
-        print("Textbox Input: ", text)
-    end
-})
-
--- Add a Label
-MainSection:CreateLabel({
-    Text = "This is a label!"
-})
+-- Add a dropdown to the category
+local dropdown = category:AddDropdown("Example Dropdown", {items = {"Option 1", "Option 2", "Option 3"}, default = "Option 1"}, function(value)
+    print("Dropdown value:", value)
+end)
