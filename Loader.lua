@@ -1,4 +1,4 @@
-local RiseLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/LiesInTheDarkness/Test/main/GuiLibrary.lua"))()
+local RiseLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/LiesInTheDarkness/Test/refs/heads/main/GuiLibrary.lua"))()
 
 -- Create the main window
 local window = RiseLib:CreateWindow("Example UI", "Classic")
