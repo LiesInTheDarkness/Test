@@ -1,5 +1,6 @@
 local scriptContent = game:HttpGet("https://raw.githubusercontent.com/LiesInTheDarkness/Test/main/GuiLibrary.lua")
 print("Script content fetched:", scriptContent and #scriptContent or "nil")
+print("Script content:", scriptContent)
 
 if not scriptContent then
     error("Failed to fetch script content")
