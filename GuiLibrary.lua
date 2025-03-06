@@ -243,7 +243,7 @@ function RiseLib:ChangeTheme(themeName, window)
                     end
                 end
             end
-        }
+        )
     end
     
     -- Save theme preference
