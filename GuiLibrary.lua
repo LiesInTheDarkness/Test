@@ -130,7 +130,7 @@ end
 -- Set current theme on initialization
 RiseLib.CurrentTheme = "Classic"
 
--- Change Theme Method
+-- Fix for the ChangeTheme function - the issue was with unclosed parentheses at line 8
 function RiseLib:ChangeTheme(themeName, window)
     if not Themes[themeName] then return end
     
@@ -243,7 +243,7 @@ function RiseLib:ChangeTheme(themeName, window)
                     end
                 end
             end
-        )
+        end
     end
     
     -- Save theme preference
